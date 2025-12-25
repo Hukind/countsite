@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Счётчики по наименованиям</title>
+  <style>
+    body { font-family: sans-serif; }
+    .item-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0;
+    }
+    .item-name {
+      min-width: 200px;
+    }
+    .counter {
+      width: 60px;
+      text-align: center;
+      display: inline-block;
+    }
+    #resultText {
+      width: 100%;
+      height: 120px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h3>Добавить наименование</h3>
+<input id="newName" type="text" placeholder="Новое наименование">
+<button id="addBtn" type="button">Добавить</button>
+
+<h3>Список наименований</h3>
+<div id="list"></div>
+
+<h3>Готовый список</h3>
+<button id="makeListBtn" type="button">Сформировать список</button><br>
+<textarea id="resultText" readonly></textarea>
+<p>Выделите текст выше и скопируйте (Ctrl+C).</p>
+
+<script>
+  const list        = document.getElementById('list');
+  const newName     = document.getElementById('newName');
+  const addBtn      = document.getElementById('addBtn');
+  const makeListBtn = document.getElementById('makeListBtn');
+  const resultText  = document.getElementById('resultText');
+
+  const data = {};
+
+
+ function createItemRow(name) {
+  const row = document.createElement('div');
+  row.className = 'item-row';
+
+  const nameSpan = document.createElement('span');
+  nameSpan.className = 'item-name';
+  nameSpan.textContent = name;
+
+  const countSpan = document.createElement('span');
+  countSpan.className = 'counter';
+  countSpan.textContent = data[name];
+
+  const btnMinus10 = document.createElement('button');
+  btnMinus10.type = 'button';
+  btnMinus10.textContent = '-10';
+
+  const btnMinus1 = document.createElement('button');
+  btnMinus1.type = 'button';
+  btnMinus1.textContent = '-1';
+
+  const btnPlus1 = document.createElement('button');
+  btnPlus1.type = 'button';
+  btnPlus1.textContent = '+1';
+
+  const btnPlus10 = document.createElement('button');
+  btnPlus10.type = 'button';
+  btnPlus10.textContent = '+10';
+
+  btnMinus10.onclick = function () {
+    if (data[name] >= 10) {        // не даём уйти ниже 0
+      data[name] -= 10;
+      countSpan.textContent = data[name];
+    }
+  };
+
+  btnMinus1.onclick = function () {
+    if (data[name] >= 1) {         // не даём уйти ниже 0
+      data[name] -= 1;
+      countSpan.textContent = data[name];
+    }
+  };
+
+  btnPlus1.onclick = function () {
+    data[name] += 1;
+    countSpan.textContent = data[name];
+  };
+
+  btnPlus10.onclick = function () {
+    data[name] += 10;
+    countSpan.textContent = data[name];
+  };
+
+  row.appendChild(nameSpan);
+  row.appendChild(countSpan);
+  row.appendChild(btnPlus1);
+  row.appendChild(btnPlus10);
+  row.appendChild(btnMinus1);
+  row.appendChild(btnMinus10);
+
+
+  return row;
+}
+
+  function renderList() {
+    list.innerHTML = '';
+    Object.keys(data).forEach(function (name) {
+      list.appendChild(createItemRow(name));
+    });
+  }
+
+  addBtn.onclick = function () {
+    const name = newName.value.trim();
+    if (!name || data[name] !== undefined) return;
+    data[name] = 0;
+    newName.value = '';
+    renderList();
+  };
+
+  makeListBtn.onclick = function () {
+    const lines = Object.keys(data).map(function (name) {
+      return name + ': ' + data[name];
+    });
+    const text = lines.join('\n');
+    resultText.value = text;
+  };
+</script>
+
+</body>
+</html>
